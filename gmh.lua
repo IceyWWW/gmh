@@ -113,3 +113,24 @@ MainTab:Button({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/IceyWWW/gcs/refs/heads/main/gcs.lua'))()
     end
 })
+
+
+-- misc tab
+
+
+local MiscTab = MainWindow:Tab({
+    Title = "Misc",
+    Icon = "circle-question-mark"
+})
+
+MiscTab:Button({
+	Title = "UNC and SUNC test",
+	Desc = "Tests UNC and SUNC ratings for executers (still in the works.)",
+	Locked = false,
+	Callback = function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/IceyWWW/unc-and-sunc-test/refs/heads/main/uncsunctest.lua'))()
+	end
+})
+
+--roles
+-- coding at some point in
