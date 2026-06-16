@@ -1,6 +1,104 @@
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1515882139856408703/eyCBhTvIrUqi6VWpiTGpaL1UleBV_v11dAa8qj6S7ZT1mgSUh3ciHtCYP9pvC9a8k4Yt"
 
--- Safe service loading
+
+local function detectExecutor()
+    local directName
+    local success, result = pcall(function()
+        if getexecutorname then
+            directName = getexecutorname()
+        end
+    end)
+    
+    if success and directName and directName ~= "" then
+        local name = directName:lower()
+        if name:find("synapse") then return "Synapse X" end
+        if name:find("krnl") then return "Krnl" end
+        if name:find("script%-ware") or name:find("scriptware") then return "Script-Ware" end
+        if name:find("fluxus") then return "Fluxus" end
+        if name:find("electron") then return "Electron" end
+        if name:find("oxygen") then return "Oxygen U" end
+        if name:find("sentinel") then return "Sentinel" end
+        if name:find("protosmasher") then return "ProtoSmasher" end
+        if name:find("calamari") then return "Calamari" end
+        if name:find("arceus") then return "Arceus X" end
+        if name:find("delta") then return "Delta" end
+        if name:find("hydrogen") then return "Hydrogen" end
+        if name:find("codex") then return "Codex" end
+        if name:find("ronix") then return "Ronix" end
+        if name:find("nihon") then return "Nihon" end
+        if name:find("swift") then return "Swift" end
+        if name:find("cryptic") then return "Cryptic" end
+        if name:find("vega") then return "Vega X" end
+        if name:find("solara") then return "Solara" end
+        if name:find("xeno") then return "Xeno" end
+        if name:find("potassium") then return "Potassium" end
+        if name:find("madium") or name:find("medium") then return "Madium" end
+        if name:find("celery") then return "Celery" end
+        if name:find("comet") then return "Comet" end
+        if name:find("sirhurt") then return "Sirhurt" end
+        if name:find("trigon") then return "Trigon" end
+        if name:find("temple") then return "Temple" end
+        if name:find("crypt") then return "Crypt" end
+        if name:find("valyse") then return "Valyse" end
+        if name:find("jjsploit") then return "JJSploit" end
+        if name:find("eruption") then return "Eruption" end
+        if name:find("proxo") then return "Proxo" end
+        if name:find("zorara") then return "Zorara" end
+        if name:find("elysian") then return "Elysian" end
+        if name:find("skisploit") then return "Skisploit" end
+        if name:find("evon") then return "Evon" end
+        if name:find("blaze") then return "Blaze" end
+        return directName
+    end
+
+    local executors = {
+        {name = "Synapse X", check = function() return syn and syn.request end},
+        {name = "Script-Ware", check = function() return ScriptWare and ScriptWare.request end},
+        {name = "Krnl", check = function() return KRNL_LOADED or (krnl and krnl.request) end},
+        {name = "Fluxus", check = function() return fluxus or FLUXUS_LOADED end},
+        {name = "Electron", check = function() return electron and electron.request end},
+        {name = "Oxygen U", check = function() return oxygen and oxygen.request end},
+        {name = "Sentinel", check = function() return sentinel and sentinel.request end},
+        {name = "ProtoSmasher", check = function() return protosmasher and protosmasher.request end},
+        {name = "Calamari", check = function() return calamari and calamari.request end},
+        {name = "Arceus X", check = function() return ARCEUS_X or (arceus and arceus.request) end},
+        {name = "Delta", check = function() return Delta or DELTA_LOADED end},
+        {name = "Hydrogen", check = function() return HYDROGEN_LOADED or Hydrogen end},
+        {name = "Codex", check = function() return CODEX_LOADED or codex end},
+        {name = "Vega X", check = function() return vega and vega.request end},
+        {name = "Solara", check = function() return solara and solara.request end},
+        {name = "Xeno", check = function() return xeno and xeno.request end},
+        {name = "Potassium", check = function() return potassium and potassium.request end},
+        {name = "Madium", check = function() return madium and madium.request end},
+        {name = "Celery", check = function() return celery and celery.request end},
+        {name = "Comet", check = function() return comet and comet.request end},
+        {name = "Sirhurt", check = function() return sirhurt and sirhurt.request end},
+        {name = "Trigon", check = function() return trigon and trigon.request end},
+        {name = "Temple", check = function() return temple and temple.request end},
+        {name = "Crypt", check = function() return crypt and crypt.request end},
+        {name = "Valyse", check = function() return valyse and valyse.request end},
+        {name = "JJSploit", check = function() return JJSploit or JJSPLOIT_LOADED end},
+        {name = "Eruption", check = function() return eruption and eruption.request end},
+        {name = "Proxo", check = function() return proxo and proxo.request end},
+        {name = "Zorara", check = function() return zorara and zorara.request end},
+        {name = "Elysian", check = function() return elysian and elysian.request end},
+        {name = "Evon", check = function() return evon and evon.request end},
+        {name = "Blaze", check = function() return blaze and blaze.request end}
+    }
+    
+    for _, exe in ipairs(executors) do
+        local exec_success, result = pcall(exe.check)
+        if exec_success and result then
+            return exe.name
+        end
+    end
+    
+    return "Unknown"
+end
+
+local executorName = detectExecutor()
+
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
@@ -18,13 +116,8 @@ local gameName = game.Name
 local placeId = game.PlaceId
 local jobId = game.JobId
 
-
 local avatarUrl = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. playerId .. "&size=420x420&format=Png&isCircular=false"
---local avatarUrl = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. playerId .. "&size=128x128&format=Png&isCircular=true"
-
-
 local fallbackAvatar = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. playerId .. "&width=420&height=420&format=png"
-
 
 local function GetAvatarUrl()
     local success, result = pcall(function()
@@ -56,8 +149,39 @@ end
 
 local finalAvatarUrl = GetAvatarUrl()
 
+
 local function SendWebhook(action)
     local success, error_msg = pcall(function()
+        local joinCommand = 'game:GetService("TeleportService"):TeleportToPlaceInstance(' .. placeId .. ', "' .. jobId .. '", game.Players.LocalPlayer)'
+        
+        local fields = {
+            {
+                ["name"] = "User",
+                ["value"] = playerName .. " (" .. playerId .. ")\n*" .. playerDisplayName .. "*",
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Game",
+                ["value"] = gameName .. "\n`" .. placeId .. "`",
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Executor",
+                ["value"] = "`" .. executorName .. "`",
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Job ID",
+                ["value"] = "`" .. jobId .. "`",
+                ["inline"] = false
+            },
+            {
+                ["name"] = "📋 Quick Join (Copy & Paste)",
+                ["value"] = "```lua\n" .. joinCommand .. "\n```",
+                ["inline"] = false
+            }
+        }
+        
         local embed = {
             ["title"] = "Gold Main Hub",
             ["description"] = "**" .. action .. "**",
@@ -65,25 +189,9 @@ local function SendWebhook(action)
             ["thumbnail"] = {
                 ["url"] = finalAvatarUrl
             },
-            ["fields"] = {
-                {
-                    ["name"] = "👤 User",
-                    ["value"] = playerName .. " (" .. playerId .. ")\n*" .. playerDisplayName .. "*",
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "🎮 Game",
-                    ["value"] = gameName .. "\n`" .. placeId .. "`",
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "🔗 Job ID",
-                    ["value"] = "`" .. jobId .. "`",
-                    ["inline"] = false
-                }
-            },
+            ["fields"] = fields,
             ["footer"] = {
-                ["text"] = os.date("%Y-%m-%d %H:%M:%S")
+                ["text"] = os.date("%Y-%m-%d %H:%M:%S") .. " | Executor: " .. executorName
             },
             ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
         }
@@ -145,7 +253,8 @@ local function SendWebhook(action)
     end
 end
 
-SendWebhook("Script executed")
+SendWebhook("Script executed (" .. executorName .. ")")
+
 
 local WindUI
 local windui_success, windui_error = pcall(function()
@@ -204,7 +313,7 @@ local main_success, main_error = pcall(function()
         end
     })
 
-    -- misc tab
+    -- ===== MISC TAB =====
     local MiscTab = MainWindow:Tab({
         Title = "Misc",
         Icon = "circle-question-mark"
@@ -263,7 +372,7 @@ local main_success, main_error = pcall(function()
         end
     })
 
-    -- credits
+
     local CreditsTab = MainWindow:Tab({
         Title = "Credits",
         Icon = "sparkles"
@@ -280,23 +389,20 @@ if not main_success then
 end
 
 
---roles
-
 local ROLES = {
     Owner = {
-        Color = Color3.fromRGB(255, 50, 50),  
-        Users = {"goldgoldblazn"},            
+        Color = Color3.fromRGB(255, 50, 50),
+        Users = {"goldgoldblazn"},
     },
     Dev = {
-        Color = Color3.fromRGB(80, 180, 255),   
-        Users = {"gigaultw", "bobtheking124561"}, 
+        Color = Color3.fromRGB(80, 180, 255),
+        Users = {"gigaultw", "bobtheking124561"},
     },
     Staff = {
-        Color = Color3.fromRGB(100, 220, 100),  
-        Users = {"deco"},              
+        Color = Color3.fromRGB(100, 220, 100),
+        Users = {"deco"},
     },
 }
-
 
 local ROLE_PRIORITY = {"Owner", "Dev", "Staff"}
 
@@ -335,7 +441,6 @@ local function createRoleBillboard(character, roleName, roleColor)
         billboard.Adornee = hrp
         billboard.Parent = hrp
 
-
         local frame = Instance.new("Frame")
         frame.Size = UDim2.new(1, 0, 1, 0)
         frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -346,7 +451,6 @@ local function createRoleBillboard(character, roleName, roleColor)
         local corner = Instance.new("UICorner")
         corner.CornerRadius = UDim.new(0, 6)
         corner.Parent = frame
-
 
         local accent = Instance.new("Frame")
         accent.Size = UDim2.new(0, 4, 1, 0)
@@ -369,7 +473,6 @@ local function createRoleBillboard(character, roleName, roleColor)
         label.Font = Enum.Font.GothamBold
         label.Parent = frame
 
-       
         local stroke = Instance.new("UIStroke")
         stroke.Color = roleColor
         stroke.Thickness = 1
@@ -414,7 +517,6 @@ local function handlePlayer(player)
         warn("Failed to handle player " .. (player.Name or "unknown") .. ": " .. tostring(error_msg))
     end
 end
-
 
 local init_roles_success, init_roles_error = pcall(function()
     for _, player in ipairs(Players:GetPlayers()) do
